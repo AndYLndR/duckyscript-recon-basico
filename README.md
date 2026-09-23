@@ -114,8 +114,8 @@ ENTER
 ```
 
 |**💡 Nota:** La parte Discord_Webhook_URL va dentro del Base64. 
-|Una vez cambiado el webhook, debes → modificar → upload .txt →  BadUSB / Rubber Ducky / Pico Ducky / Flipper Zero
-|(ver scripts/decode_payload.ps1).
+Una vez cambiado el webhook, debes → modificar → upload .txt →  BadUSB / Rubber Ducky / Pico Ducky / Flipper Zero
+```(ver scripts/decode_payload.ps1).```
 
 ---
 
