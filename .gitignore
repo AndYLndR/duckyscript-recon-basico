@@ -1,0 +1,7 @@
+# Exclusiones
+*.log
+*.tmp
+resultados/
+webhooks.txt
+.env
+*.key
